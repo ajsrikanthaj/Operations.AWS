@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using Amazon;
 using Amazon.EC2;
@@ -10,7 +6,7 @@ using Amazon.EC2.Model;
 
 namespace Operations.AWS
 {
-    public class InstanceOperations : AmazonEc2ClientValidator
+    public class InstanceOperations : AmazonEc2ClientProvider
     {
         public InstanceOperations(string accessKey, string secretKey, string regionSystemName) 
             : base(accessKey, secretKey, regionSystemName)
@@ -89,21 +85,35 @@ namespace Operations.AWS
             return response.Reservations[0].Instances[0].BlockDeviceMappings;
         }
 
-        public Instance LaunchNewInstance(SecurityGroup seccurityGroup, Subnet subnet, KeyPairInfo keypairInfo, InstanceType instanceType, List<InstanceNetworkInterfaceSpecification> enis, Image ami)
+        public Instance LaunchNewInstanceInVpc(string amiId, string seccurityGroupId, string keypairName, string instanceType, List<InstanceNetworkInterfaceSpecification> enis)
         {
-            InstanceType InstanceType = InstanceType.FindValue(instanceType);
-
-            RunInstancesRequest launchRequest = new RunInstancesRequest()
+            var launchRequest = new RunInstancesRequest()
             {
-                ImageId = ami.ImageId,
-                InstanceType = InstanceType.Value,
+                ImageId = amiId,
+                InstanceType = instanceType,
                 MinCount = 1,
                 MaxCount = 1,
-                KeyName = keypairInfo.KeyName,
+                KeyName = keypairName,
                 NetworkInterfaces = enis
             };
-            RunInstancesResponse launchResponse = amazonEc2Client.RunInstances(launchRequest);
 
+            var launchResponse = amazonEc2Client.RunInstances(launchRequest);
+            return launchResponse.Reservation.Instances[0];
+        }
+
+        public Instance LaunchNewInstance(string seccurityGroupId, string amiID, string keyPairName, string instanceType)
+        {
+            var launchRequest = new RunInstancesRequest()
+            {
+                ImageId = amiID,
+                InstanceType = instanceType,
+                MinCount = 1,
+                MaxCount = 1,
+                KeyName = keyPairName,
+                SecurityGroupIds = new List<string>() { seccurityGroupId }
+            };
+
+            var launchResponse = amazonEc2Client.RunInstances(launchRequest);
             return launchResponse.Reservation.Instances[0];
         }
 

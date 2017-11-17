@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using Amazon;
 using Amazon.EC2;
@@ -10,7 +6,7 @@ using Amazon.EC2.Model;
 
 namespace Operations.AWS
 {
-    public class VolumeOperations : AmazonEc2ClientValidator
+    public class VolumeOperations : AmazonEc2ClientProvider
     {
         public VolumeOperations(string accessKey, string secretKey, string regionSystemName) 
             : base(accessKey, secretKey, regionSystemName)

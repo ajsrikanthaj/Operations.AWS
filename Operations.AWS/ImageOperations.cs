@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using Amazon;
 using Amazon.EC2;
@@ -10,7 +6,7 @@ using Amazon.EC2.Model;
 
 namespace Operations.AWS
 {
-    public class ImageOpertions : AmazonEc2ClientValidator
+    public class ImageOpertions : AmazonEc2ClientProvider
     {
         public ImageOpertions(string accessKey, string secretKey, string regionSystemName) 
             : base(accessKey, secretKey, regionSystemName)
@@ -87,6 +83,38 @@ namespace Operations.AWS
 
             DeregisterImageRequest imageDeregisterRequest = new DeregisterImageRequest(imagesResponse.Images[0].ImageId);
             amazonEc2Client.DeregisterImage(imageDeregisterRequest);
+        }
+
+        public string CopyAMI(Image ami, RegionEndpoint sourceRegion)
+        {
+            CopyImageRequest copyRequest = new CopyImageRequest();
+            copyRequest.SourceImageId = ami.ImageId;
+            copyRequest.SourceRegion = sourceRegion.SystemName;
+            copyRequest.Name = ami.Name;
+            copyRequest.Description = ami.Description;
+
+            var copyResponse = amazonEc2Client.CopyImage(copyRequest);
+
+            return copyResponse.ImageId;
+        }
+
+        public void ModifyAmiPermission(Image ami, bool Public)
+        {
+            ModifyImageAttributeRequest modifyRequest = new ModifyImageAttributeRequest(ami.ImageId, "launchPermission");
+
+            var launchPermission = new LaunchPermissionModifications();
+            if (Public)
+            {
+                launchPermission.Add.Add(new LaunchPermission { Group = "all" });
+            }
+            else
+            {
+                launchPermission.Remove.Add(new LaunchPermission { Group = "all" });
+            }
+
+            modifyRequest.LaunchPermission = launchPermission;
+
+            amazonEc2Client.ModifyImageAttribute(modifyRequest);
         }
     }
 }

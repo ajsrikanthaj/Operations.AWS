@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 using Amazon;
 using Amazon.EC2;
@@ -10,14 +6,10 @@ using Amazon.EC2.Model;
 
 namespace Operations.AWS
 {
-    public partial class SnapshotOperations : AmazonEc2ClientValidator
+    public class SnapshotOperations : AmazonEc2ClientProvider
     {
         public SnapshotOperations(string accessKey, string secretKey, string regionSystemName) 
             : base(accessKey, secretKey, regionSystemName)
-        {
-        }
-
-        public SnapshotOperations(string accessKey, string secretKey, RegionEndpoint region) : base(accessKey, secretKey, region)
         {
         }
 

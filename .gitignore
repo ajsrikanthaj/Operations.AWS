@@ -1,0 +1,12 @@
+
+.gitattributes
+.gitattributes
+*.dll
+*.txt
+*.cache
+Operations.AWS/obj/Debug/Operations.AWS.csproj.FileListAbsolute.txt
+*.ide
+*.CopyComplete
+*.pdb
+.gitattributes
+.vs/Operations.AWS/v15/.suo
